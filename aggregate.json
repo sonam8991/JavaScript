@@ -1,0 +1,30 @@
+[
+  {
+    "continent": "Asia",
+    "aggregate": 135
+  },
+  {
+    "continent": "Europe",
+    "aggregate": 115.22727272727273
+  },
+  {
+    "continent": "Africa",
+    "aggregate": 171.19148936170214
+  },
+  {
+    "continent": "Oceania",
+    "aggregate": 117.33333333333333
+  },
+  {
+    "continent": "North America",
+    "aggregate": 144.26315789473685
+  },
+  {
+    "continent": "South America",
+    "aggregate": 193.0909090909091
+  },
+  {
+    "continent": "Australia",
+    "aggregate": null
+  }
+]

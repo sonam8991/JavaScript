@@ -1,95 +1,96 @@
 var fs=require('fs');
 var readline=require('readline');
 
-var rd1=readline.createInterface({
+var read=readline.createInterface({
   input: fs.createReadStream('WDI_Data.csv'),
-  output:process.stdout,
+  output: process.stdout,
   terminal: false
 });
 
-var rd2=readline.createInterface({
-  input: fs.createReadStream('Countries-Continents-csv.csv'),
-  output:process.stdout,
-  terminal:false
-});
-
 var flag=true;
-var index1,index2,index3,index4;
-var continent=null,sum=0;
-var arrayOfObject=[],finalObject;
-rd1.on('line',function(line){
-       newArray=line.toString().split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-       if(flag==true){
-          indexStart=line.toString().split(',').indexOf('1960');
-          indexEnd=line.toString().split(',').indexOf('2015');
-          console.log("inside true  "+indexStart+"   "+indexEnd);
-          for(var j=0;j<newArray.length;j++){
-              if(newArray[j]=="Country Name"){
-              index1=j;
-              }else if(newArray[j]=="Country Code"){
-              index2=j;
-              }else if(newArray[j]=="Indicator Name"){
-              index3=j;
-              }else if(newArray[j]=="Indicator Code"){
-              index4=j;
+var newArray,aggregateArray=[];
+var index1,index2,startIndex,endIndex;
+var countryObject,aggregateObject;
+var sum=0;
+var continentArray=['Asia','Europe','Africa','Oceania','North America','South America','Australia'];
+read.on('line',function(line){
+  newArray=line.toString().split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+  if(flag==true){
+     startIndex = line.toString().split(',').indexOf('1960');
+     endIndex = line.toString().split(',').indexOf('2015');
+     for(var i=0;i<newArray.length;i++){
+      if(newArray[i]=="Country Name"){
+        index1=i;
+      }else if(newArray[i]=="Indicator Name"){
+      index2=i;
+     }
+   }//end loop
+    continentCountryFunction();
+    flag=false;
+    console.log(startIndex+"    "+endIndex);
+ }//  end if true condition
+ else{
+    if(newArray[index2]=="GDP per capita (constant 2005 US$)"){
+      for(var k=0;k<continentCountryArray.length;k++){
+        countryObject=new Object();
+        countryObject=continentCountryArray[k];
+        if(countryObject.country==newArray[index1]){
+        //  console.log(countryObject.continent);
+          aggregateObject=new Object();
+          aggregateObject.continent=countryObject.continent;
+          for(var i=startIndex;i<=endIndex;i++){
+            if(newArray[i]==0){
+              newArray[i]=0;
             }
-            }//for loop
-         flag=false;
-         console.log(flag);
-        }//if condition
-      else{
-             if(newArray[index3]=="GDP per capita (constant 2005 US$)"){
-                 filterdata(newArray[index1]);
-                 if(continent==null){
-
-                 }else{
-                   console.log(continent);
-                   for(var k=indexStart;k<indexEnd+1;k++){
-                     if(newArray[k]==0){
-                       newArray[k]=0;
-                     }
-                      sum=sum+newArray[k];
-                      console.log(sum);
-                 }//end loop
-                 if(arrayOfObject.length==0){
-                   finalObject=new Object();
-                   finalObject.continent=continent;
-                   finalObject.sum=sum;
-                   arrayOfObject.push(finalObject);
-                 }else{
-                /*   finalObject=new Object();
-                   for(var i=0;i<arrayOfObject.length;i++){
-                      finalObject=arrayOfObject[i];
-                     if(finalObject.continent==continent){
-                       finalObject.sum=finalObject.sum+sum;
-                     }else{
-                       finalObject.continent=continent;
-                       finalObject.sum=sum;
-                     }
-                     arrayOfObject.push(finalObject);
-                   }//end loop
-                 }//else*/
-              }//final else end
-             }
-
-      }
+            var d=parseInt(newArray[i]);
+            sum=sum+d;
+          }// end startIndex loop
+        //  console.log(sum);
+          aggregateObject.sum=sum;
+          aggregateArray.push(aggregateObject);
+          sum=0;
+        }//end if countryObject
+      }// end k loop
+    }// end if GDP per capita
+ }// end final else
 });
-var lineArray,continentCountryArray;
-var filterdata=function(country){
-
+read.on('close',function(){
+  var add=0,count=0,avg;
+  var finalObject,finalArray=[];
+  for(var k=0;k<continentArray.length;k++){
+       var continent=continentArray[k];
+       for(var i=0;i<aggregateArray.length;i++){
+         aggregateObject=new Object();
+         aggregateObject=aggregateArray[i];
+         if(continent==aggregateObject.continent){
+             add=add+aggregateObject.sum;
+             count++;
+       }//end if continent
+  }//end i loop
+   avg=add/count;
+   finalObject=new Object();
+   finalObject.continent=continent;
+   finalObject.aggregate=avg;
+   finalArray.push(finalObject);
+   add=0;
+   count=0;
+}// end k loop
+     console.log(finalArray);
+     fs.writeFile('aggregate.json',JSON.stringify(finalArray,null, 2));
+});
+var obj;
+var array,lineArray;
+var continentCountryArray=[];
+var continentCountryFunction=function(){
   fs.readFile('Countries-Continents-csv.csv',function(err,data){
-    if(err){
-      console.log(err);
-    }else{
-       lineArray=data.toString().split("\n");
-       for(var i=0;i<lineArray.length;i++){
-         continentCountryArray=lineArray[i].toString().split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-          if(continentCountryArray[1]==country){
-          //  console.log("matched");
-            continent=continentCountryArray[0];
-          }//end if
-      }//end loop
-    }//end else
-}); //end fs function
-
-};
+    array=data.toString().split("\n");
+     for(var i=0;i<array.length;i++){
+       lineArray=array[i].toString().split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+       obj=new Object();
+       obj.continent=lineArray[0];
+       obj.country=lineArray[1];
+       continentCountryArray.push(obj);
+     }
+    //console.log(continentCountryArray);
+  });
+}

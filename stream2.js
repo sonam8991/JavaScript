@@ -6,7 +6,11 @@ var rd=readline.createInterface({
   output:process.stdout,
   terminal: false
 });
-var flag=true,growth,arrayOfGrowth,arr,newArray,dataObject,arrayObject=[],filterArrayObject=[],indicatorObjectForPerCapita,indicatorObjectForConstant,countryPlusIndicatorObject,filterCountryName,count=0,index1,index2,index3,index4,index5,countryName,countryCode,indicatorName,indicatorCode,year;
+var flag=true;
+var growth
+var arrayOfGrowth,arr,newArray,arrayObject=[],filterArrayObject=[];
+var dataObject,indicatorObjectForPerCapita,indicatorObjectForConstant,countryPlusIndicatorObject,filterCountryName;
+var count=0,index1,index2,index3,index4,index5,countryName,countryCode,indicatorName,indicatorCode,year;
 
 dataObject=new Object();
 dataObject.countryName="Country Name";
@@ -39,7 +43,7 @@ rd.on('line',function(line){
        else{
             if(newArray[index1]=="India"){
                  if(newArray[index3]=="GDP growth (annual %)"){
-                   arrayOfGrowth=[];
+                    arrayOfGrowth=[];
                   // growth=new Object();
                       for (var k = indexStart,i=0; k <=indexEnd; k++,i++) {
                         if(newArray[k]==0){
@@ -51,10 +55,13 @@ rd.on('line',function(line){
                         arrayOfGrowth.push(growth);
 
                       }// end loop
-                      console.log(arrayOfGrowth);
                     }
 
                 }//end if
-               fs.writeFile('filename.json',JSON.stringify(arrayOfGrowth));
+
            }//else end
+});
+
+rd.on('close',function(){
+   fs.writeFile('indiaGrowth.json',JSON.stringify(arrayOfGrowth,null,2));
 });

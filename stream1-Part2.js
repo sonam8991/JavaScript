@@ -59,37 +59,38 @@ rd.on('line',function(line){
          finalObject.indicatorName=gdpGniObject;
         // console.log(finalObject.countryName+"  "+finalObject.indicatorName.gdp+"   "+finalObject.indicatorName.gni);
          finalArray.push(finalObject);
-         sortingFlag=1;
          gdp=0;
          gni=0;
 
          }
-         if(sortingFlag==1){
-            var len=finalArray.length;
-            var obj1,obj2;
-            if(len>1){
-              for(var i=0; i < len; i++){
-                 for(var j=1; j < (len-i); j++){
-                    obj1=new Object();
-                    obj2=new Object();
-                    obj1=finalArray[j-1];
-                    obj2=finalArray[j]
-                    //console.log(obj1.indicatorName.gdp+"      "+obj2.indicatorName.gdp);
-                         if(obj1.indicatorName.gdp < obj2.indicatorName.gdp){
-                                      var temp = obj1.indicatorName.gdp;
-                                       obj1.indicatorName.gdp = obj2.indicatorName.gdp;
-                                       obj2.indicatorName.gdp = temp;
-                               }
-
-                       }
-               }
-            }
-
-          sortingFlag=0;
-          fs.writeFile('gdpGniPart2.json',JSON.stringify(finalArray));
-         }
 
    }   //end main else condition
+
+});
+rd.on('close',function(){
+
+     var len=finalArray.length;
+     var obj1,obj2;
+     if(len>1){
+       for(var i=0; i < len; i++){
+          for(var j=1; j < (len-i); j++){
+             obj1=new Object();
+             obj2=new Object();
+             obj1=finalArray[j-1];
+             obj2=finalArray[j]
+             //console.log(obj1.indicatorName.gdp+"      "+obj2.indicatorName.gdp);
+                  if(obj1.indicatorName.gdp < obj2.indicatorName.gdp){
+                               var temp = obj1.indicatorName.gdp;
+                                obj1.indicatorName.gdp = obj2.indicatorName.gdp;
+                                obj2.indicatorName.gdp = temp;
+                        }
+
+                }
+        }
+     }
+
+   var finalData= finalArray.slice(0,15);
+   fs.writeFile('gdpGniPart2.json',JSON.stringify(finalData,null, 2));
 
 });
 
