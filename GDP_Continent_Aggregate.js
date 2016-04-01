@@ -2,7 +2,7 @@ var fs=require('fs');
 var readline=require('readline');
 
 var read=readline.createInterface({
-  input: fs.createReadStream('WDI_Data.csv'),
+  input: fs.createReadStream('dataFiles/WDI_Data.csv'),
   output: process.stdout,
   terminal: false
 });
@@ -67,22 +67,22 @@ read.on('close',function(){
              count++;
        }//end if continent
   }//end i loop
-   avg=add/count;
+   //avg=add/count;
    finalObject=new Object();
    finalObject.continent=continent;
-   finalObject.aggregate=avg;
+   finalObject.aggregate=add;
    finalArray.push(finalObject);
    add=0;
    count=0;
 }// end k loop
      console.log(finalArray);
-     fs.writeFile('aggregate.json',JSON.stringify(finalArray,null, 2));
+     fs.writeFile('jsonFiles/GDP_Continent_Aggregate.json',JSON.stringify(finalArray,null, 2));
 });
 var obj;
 var array,lineArray;
 var continentCountryArray=[];
 var continentCountryFunction=function(){
-  fs.readFile('Countries-Continents-csv.csv',function(err,data){
+  fs.readFile('dataFiles/Countries-Continents-csv.csv',function(err,data){
     array=data.toString().split("\n");
      for(var i=0;i<array.length;i++){
        lineArray=array[i].toString().split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);

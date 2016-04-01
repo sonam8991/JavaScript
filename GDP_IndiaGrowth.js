@@ -2,7 +2,7 @@ var fs=require("fs");
 readline=require('readline');
 
 var rd=readline.createInterface({
-  input: fs.createReadStream('WDI_Data.csv'),
+  input: fs.createReadStream('dataFiles/WDI_Data.csv'),
   output:process.stdout,
   terminal: false
 });
@@ -63,5 +63,5 @@ rd.on('line',function(line){
 });
 
 rd.on('close',function(){
-   fs.writeFile('indiaGrowth.json',JSON.stringify(arrayOfGrowth,null,2));
+   fs.writeFile('jsonFiles/indiaGrowth.json',JSON.stringify(arrayOfGrowth,null,2));
 });

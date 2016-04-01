@@ -1,7 +1,7 @@
 var fs=require('fs');
 var readline=require('readline');
 var rd=readline.createInterface({
-    input: fs.createReadStream('WDI_Data.csv'),
+    input: fs.createReadStream('dataFiles/WDI_Data.csv'),
     output: process.stdout,
     terminal:false
 });
@@ -34,13 +34,14 @@ rd.on('line',function(line){
       console.log(flag);
   }//  end if true condition
   else{
-      if(newArray[index3]=="GDP (constant LCU)"){
+
+      if(newArray[index3]=="GDP per capita (constant 2005 US$)"){
         for(var i=0;i<countryArray.length;i++){
           if(newArray[index1]==countryArray[i]){
              gdp=newArray[index5];
           }
         }//for loop
-      }else if(newArray[index3]=="GNI (constant 2005 US$)"){
+      }else if(newArray[index3]=="GNI per capita (constant 2005 US$)"){
         for(var i=0;i<countryArray.length;i++){
           if(newArray[index1]==countryArray[i]){
               gni=newArray[index5];
@@ -50,52 +51,48 @@ rd.on('line',function(line){
 
       if(gdp!=0 && gni!=0){
          gdpGniObject=new Object();
-         gdpGniObject.gdp=gdp;
-         gdpGniObject.gni=gni;
+         gdpGniObject.countryName=newArray[index1];
+         gdpGniObject.gdp=parseFloat(gdp);
+         gdpGniObject.gni=parseFloat(gni);
 
          finalObject=new Object();
-         finalObject.countryName=newArray[index1];
-         finalObject.indicatorName=gdpGniObject;
+        // finalObject.countryName=newArray[index1];
+        // finalObject.indicatorName=gdpGniObject;
         // console.log(finalObject.countryName+"  "+finalObject.indicatorName.gdp+"   "+finalObject.indicatorName.gni);
-         finalArray.push(finalObject);
-        // sortingFlag=1;
+         finalArray.push(gdpGniObject);
          gdp=0;
          gni=0;
+
          }
+
    }   //end main else condition
 
 });
 rd.on('close',function(){
-
-     var len=finalArray.length;
-     var obj1,obj2;
-     if(len>1){
-       for(var i=0; i < len; i++){
-          for(var j=1; j < (len-i); j++){
-             obj1=new Object();
-             obj2=new Object();
-             obj1=finalArray[j-1];
-             obj2=finalArray[j]
-             //console.log(obj1.indicatorName.gdp+"      "+obj2.indicatorName.gdp);
-                  if(obj1.indicatorName.gdp < obj2.indicatorName.gdp){
-                               var temp = obj1.indicatorName.gdp;
-                                obj1.indicatorName.gdp = obj2.indicatorName.gdp;
-                                obj2.indicatorName.gdp = temp;
-                        }
-                   }
-              }
-       }
-
-   var finalData=finalArray.slice(0,15);
-   fs.writeFile('gdpGniPart1.json',JSON.stringify(finalData,null, 2));
+     bubbleSort(finalArray,'gdp')
+     function bubbleSort(a, par)
+      {
+      var swapped;
+      do {
+        swapped = false;
+        for (var i = 0; i < a.length - 1; i++) {
+            if (a[i][par] < a[i + 1][par]) {
+                var temp = a[i];
+                a[i] = a[i + 1];
+                a[i + 1] = temp;
+                swapped = true;
+            }
+        }
+      } while (swapped);
+    }
+   console.log(finalArray);
+   var finalData= finalArray.slice(0,15);
+   fs.writeFile('jsonFiles/GDP_Top15_Country2.json',JSON.stringify(finalData,null, 2));
 
 });
 
-
-
-
 var countryFunction=function(){
-fs.readFile('Countries-Continents-csv.csv',function(err,data){
+fs.readFile('dataFiles/Countries-Continents-csv.csv',function(err,data){
   if(err){
     console.log(err);
   }else{
